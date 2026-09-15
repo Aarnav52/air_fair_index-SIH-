@@ -11,26 +11,54 @@
 ## Project Structure
 ```
 backend/
-├── .env                        ← credentials (never commit)
+├── .env                          ← credentials (never commit)
 ├── requirements.txt
-├── check_db.py                 ← one-time schema inspector
+├── run_sweep_t1.bat              ← Task Scheduler entrypoint, T+1 (every 6h)
+├── run_sweep_t30.bat             ← Task Scheduler entrypoint, T+30 (daily)
+├── logs/                         ← sweep logs (gitignored)
+├── test_polite_fetcher.py        ← 25 unit tests, fake transport, no real network
+├── scripts/
+│   └── check_db.py               ← manual schema/data inspector (standalone, no app import)
 └── app/
-    ├── config.py               ← loads .env
-    ├── main.py                 ← FastAPI app + CORS
+    ├── config.py                 ← loads .env
+    ├── main.py                   ← FastAPI app + CORS, mounts routers below
     ├── db/
-    │   ├── connection.py       ← psycopg2 context manager
-    │   └── queries.py          ← SQL: sources / routes / observations
+    │   ├── connection.py         ← psycopg2 context manager
+    │   └── queries.py            ← INSERT with same-day dedup guard +
+    │                                fee-decomposition hook
     ├── scraper/
-    │   ├── serpapi_client.py   ← SerpApi Google Flights client
-    │   └── flight_parser.py    ← JSON → DB dict parser
+    │   ├── polite_fetcher.py     ← compliance gate every scraper goes through
+    │   │                            (robots.txt, bot-challenge detection,
+    │   │                            per-host rate limit, circuit breaker)
+    │   ├── serpapi_client.py     ← SerpApi Google Flights client
+    │   ├── flight_parser.py      ← SerpApi JSON → DB dict parser
+    │   ├── direct_scrapers.py    ← Akasa Air / SpiceJet, routed through
+    │   │                            PoliteFetcher, any route/date
+    │   ├── run_all_scrapers.py   ← full-sweep entrypoint (--window T+1/T+30,
+    │   │                            --limit N); what the .bat files call
+    │   └── scrape_akasa_live.py, scrape_spicejet_live.py,
+    │       demo_polite_fetcher_live.py
+    │                            ← original single-route demo scripts,
+    │                               superseded by direct_scrapers.py +
+    │                               run_all_scrapers.py but kept as minimal
+    │                               standalone examples of the pattern
     ├── services/
-    │   ├── scraping_service.py ← orchestrates T+1 / T+30 scrape
-    │   └── index_service.py    ← Jevons price index calculation
+    │   ├── scraping_service.py   ← orchestrates the SerpApi T+1/T+30 scrape
+    │   ├── fee_decomposition.py  ← tariff-schedule-derived base_fare/
+    │   │                            taxes_fees/udf/gst_amount/fuel_surcharge
+    │   └── index_service.py      ← ⚠ SEE "Jevons Index" SECTION BELOW —
+    │                                this is a placeholder, not the real engine
     └── api/
-        ├── flights.py          ← GET /flights/  POST /flights/scrape
-        ├── routes.py           ← GET /routes/
-        └── index.py            ← GET /index/  GET /index/summary
+        ├── flights.py             ← GET /flights/  POST /flights/scrape
+        ├── routes.py              ← GET /routes/
+        └── index.py               ← GET /index/  GET /index/summary
+                                       (currently backed by the placeholder
+                                       above, not jevons_engine/)
 ```
+
+The real statistics engine, `jevons_engine/jevons_engine_cloud.py`, lives at
+the repo root (sibling of `backend/`, not inside it) — it's owned/maintained
+separately and is not yet wired to the API above (see below).
 
 ---
 
@@ -89,33 +117,51 @@ Frontend is live at: http://localhost:5173
 
 ## Data Flow
 
+Two collection paths, one shared write path (see `SIH26056_APIx_
+Architecture_and_Pipelines.md` one level above the repo for full diagrams):
+
 ```
-SerpApi Google Flights
+Windows Task Scheduler (run_sweep_t1.bat / run_sweep_t30.bat)
         ↓
-  serpapi_client.py  (fetch raw JSON)
+  run_all_scrapers.py  (run_full_sweep — every active route)
+        ├──→ scraping_service.py → serpapi_client.py → flight_parser.py
+        └──→ direct_scrapers.py → polite_fetcher.py → Akasa/SpiceJet sites
+        ↓                                   (both paths converge here)
+  queries.py:
+    1. same-IST-day dedup check (skip already-scraped flight+date+window)
+    2. fee_decomposition.py (fill base_fare/taxes/udf/gst if a tariff
+       schedule exists for this airline+station — never fabricated)
+    3. INSERT INTO flight_observations
         ↓
-  flight_parser.py   (parse → dict)
-        ↓
-  scraping_service.py (T+1 / T+30 dates, orchestration)
-        ↓
-  queries.py         (INSERT INTO flight_observations)
-        ↓
-  Supabase PostgreSQL
+  Supabase PostgreSQL (apix(SIH))
         ↓
   FastAPI endpoints  (serve to frontend)
         ↓
-  LiveDataPanel.jsx  (React dashboard tab)
+  LiveDataPanel.jsx / Dashboard.jsx / AirlineAnalytics.jsx
 ```
 
 ---
 
 ## Jevons Index
 
-- Implemented in `app/services/index_service.py`
-- Fully decoupled from scraper — statistical team can modify freely
-- Formula: **J = (P_current / P_base) × 100**
-- Base = earliest available scrape date (auto-detected)
-- Index grows richer as more daily scrapes accumulate
+**⚠ `index_service.py` is a placeholder, not the real Jevons/GEKS-Jevons
+engine.** Despite its name and docstring, `calculate_jevons_index()` does
+NOT compute a geometric mean of price relatives — it computes
+`(AVG(price today) / AVG(price on base date)) × 100`, a simple ratio of
+arithmetic means. (It even defines an unused `_geometric_mean()` helper
+that nothing calls — dead code, not wired in.) This is what `GET /index/`
+currently returns, and what the dashboard's "APEX-IND GEKS" panel displays.
+
+The real, correctly-implemented engine is `jevons_engine/
+jevons_engine_cloud.py` (repo root, not under `backend/`) — it genuinely
+computes `exp(mean(log(price_relative))) * 100` per the Jevons formula,
+with a route-level and national rollup on top. It reads from
+`cleaned_observations_table` and writes to an `index_values` table. **It is
+not yet wired to `GET /index/`** — that reconnection (fix the table schema
+so the engine's own output actually persists, point this API at it instead
+of `index_service.py`) is a known, open, in-progress item, not a
+methodology gap. Don't present the current `/index/` output as GEKS-Jevons
+without this caveat.
 
 ---
 
@@ -124,7 +170,12 @@ SerpApi Google Flights
 - `lead_time_days` is a **PostgreSQL generated column** — Python never writes it
 - `cabin_class` must be one of: `economy`, `premium_economy`, `business`
 - `source_type` must be one of: `airline_direct`, `ota`, `api`
-- Duplicate guard: `ON CONFLICT (route_id, source_id, flight_number, departure_date, scrape_timestamp) DO NOTHING`
+- Duplicate guard is two-layered: a DB unique constraint
+  (`ON CONFLICT (route_id, source_id, flight_number, departure_date,
+  scrape_timestamp) DO NOTHING`) plus an application-level same-IST-day
+  check in `insert_observations()` — the DB constraint alone can't catch
+  two sweep runs minutes apart, since `scrape_timestamp` is fresh every
+  call; the app-level check is what actually prevents that.
 - All timestamps use `Asia/Kolkata` timezone
 
 ---
