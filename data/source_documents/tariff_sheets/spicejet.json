@@ -1,0 +1,10 @@
+{
+  "airline": "SpiceJet",
+  "document_title": "SPICEJET BASIC FARES EFFECTIVE SEP. '26",
+  "effective_period": "Sep. '26 (September 2026), as stated in the document header; no separate effective date is printed for the Table-2 tax/fee schedule, which appears on the same 2-page sheet",
+  "source_url": null,
+  "obtained_by": "APIx team",
+  "obtained_date": "2026-09-14",
+  "obtained_method": "manual download, automated-fetch compliance unverified",
+  "notes": "2-page tariff sheet containing Table-1 (a fare-level grid of Min/Max regular base fares by route, excluded from extraction) and Table-2 'Taxes, Fees and Charges' (a per-origin-station schedule of ASF, RCS, CUTE/TRF, UDF, AAT, and GST used for this extraction); YQ fuel surcharge is disclosed only as a general footnote, not broken out per station."
+}

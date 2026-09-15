@@ -13,6 +13,13 @@ dist-ssr
 .env.test.local
 .env.production.local
 
+# Python
+__pycache__/
+*.pyc
+
+# Raw source documents (copyrighted airline tariff PDFs - never public, see CLAUDE.md)
+data/source_documents/tariff_sheets_raw/
+
 # Editor & OS files
 .DS_Store
 *.suo

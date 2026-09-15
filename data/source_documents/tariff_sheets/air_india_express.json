@@ -1,0 +1,10 @@
+{
+  "airline": "Air India Express",
+  "document_title": "Fees & Charges - Domestic / Fees & Charges - International",
+  "effective_period": "not stated (no effective/issue date printed anywhere in the document; PDF file metadata shows a creation date of 2026-08-05, which is not the same as a stated tariff effective date)",
+  "source_url": null,
+  "obtained_by": "APIx team",
+  "obtained_date": "2026-09-14",
+  "obtained_method": "manual download, automated-fetch compliance unverified",
+  "notes": "This 3-page document is confirmed as Air India Express (the name is printed explicitly as a header on both the domestic and international fee pages) but it is an ancillary-fee tariff sheet only (change/cancellation, baggage, seat, add-on-pack, infant/UM/ID-verification fees for domestic and international routes) with no station-specific ASF/UDF/PSF/RCF/CUTE/GST/YQ tax schedule and no mention of DEL/BOM/BLR/HYD/CCU/MAA anywhere, so no tax/fee extraction for the requested target airports was possible from this source."
+}

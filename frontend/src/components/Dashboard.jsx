@@ -189,6 +189,12 @@ export default function Dashboard() {
                 SYSTEM ONLINE
               </span>
 
+              {dashboardTab !== 'live' && (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                  Simulated Data
+                </span>
+              )}
+
             </div>
 
             <p className="text-sm text-slate-400 mt-1">

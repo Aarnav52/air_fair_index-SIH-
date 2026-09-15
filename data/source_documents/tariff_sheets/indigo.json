@@ -1,0 +1,10 @@
+{
+  "airline": "IndiGo",
+  "document_title": "No explicit airline-branded title is printed; the PDF is a generated report (embedded metadata title: 'R Graphics Output', Producer: R 4.5.1) whose pages are headed only by section labels such as 'ONE WAY DIRECT ECONOMY FARES', 'ONE WAY CONNECTION ECONOMY FARES', 'ONE WAY LITE ECONOMY FARES', 'ONE WAY BUSINESS CLASS FARES', 'Taxes: Table 1', and 'Taxes: Table 2'",
+  "effective_period": "2026-09-01 14:25:50 (generation timestamp printed at the top of page 1, matching the filename date); no separate effective-from/to date range is stated anywhere in the document",
+  "source_url": null,
+  "obtained_by": "APIx team",
+  "obtained_date": "2026-09-14",
+  "obtained_method": "manual download, automated-fetch compliance unverified",
+  "notes": "84-page tariff sheet consisting mostly of fare-level grids (Direct/Connection/Lite Economy and Business Class Min/Max base-fare tables by route, all excluded from extraction) followed by 18 footnotes and two tax tables on the final pages: Table 1, a per-station schedule of ASF, PHF (CUTE), UDF, RCF, PSF and GST, and Table 2, a YQ fuel-charge schedule banded by flight distance (not by station) -- only these two tables were used for this extraction."
+}

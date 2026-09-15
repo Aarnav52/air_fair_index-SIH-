@@ -38,7 +38,6 @@ export const generateTimeSeriesData = (range = '90D', shockFactor = 1.0) => {
   const pointsCount = range === '7D' ? 7 : range === '30D' ? 30 : range === '90D' ? 90 : range === '1Y' ? 365 : 180;
   const data = [];
   let baseGEKS = 152.0 * shockFactor;
-  let baseLaspeyres = 152.0 * shockFactor;
   let baseCPI = 148.5;
   let baseATF = 140.0;
   
@@ -52,7 +51,6 @@ export const generateTimeSeriesData = (range = '90D', shockFactor = 1.0) => {
     const macroTrend = 0.15;
     
     baseGEKS += macroTrend + randomNoise;
-    baseLaspeyres += macroTrend + randomNoise + 0.045;
     baseCPI += 0.08 + (Math.random() - 0.49) * 0.2;
     baseATF += (Math.random() - 0.45) * 1.2;
     
@@ -60,7 +58,6 @@ export const generateTimeSeriesData = (range = '90D', shockFactor = 1.0) => {
       date: d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }),
       fullDate: d.toISOString().split('T')[0],
       geksIndex: parseFloat(baseGEKS.toFixed(2)),
-      laspeyresIndex: parseFloat(baseLaspeyres.toFixed(2)),
       mospiCPI: parseFloat(baseCPI.toFixed(2)),
       atfBenchmark: parseFloat(baseATF.toFixed(2)),
       avgFare: Math.round(baseGEKS * 32.1),

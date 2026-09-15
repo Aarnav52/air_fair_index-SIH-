@@ -1,0 +1,10 @@
+{
+  "airline": "Akasa Air",
+  "document_title": "No explicit airline-branded title is printed; the PDF is a 2-page Excel export (Creator/Producer: Microsoft Excel for Microsoft 365, embedded metadata title is blank) headed only by 'Updated on: 1-Sep-26' above a fare grid, followed by notes and two labeled tables: \"Table 'A'\" (base fare levels) and \"Table 'B'\" (station-wise ASF/CUTE/PSF/RCS/UDF/GST schedule)",
+  "effective_period": "Updated on: 1-Sep-26 (the only date stated in the document; no separate effective-from/to range given)",
+  "source_url": null,
+  "obtained_by": "APIx team",
+  "obtained_date": "2026-09-14",
+  "obtained_method": "manual download, automated-fetch compliance unverified",
+  "notes": "2-page tariff sheet: page 1 is Table A, a route-level base-fare grid (Market, Type, Stops, per-market Fuel Charge/YQ, and 15 fare levels) explicitly excluded from this extraction, plus footnotes on cancellation/change/agent/convenience fees; the station-specific tax/fee schedule used for this extraction is Table B (spanning the bottom of page 1 into page 2), listing ASF, CUTE, PSF, RCS (Regional Connectivity Scheme levy), UDF/DF split into Embarking and Disembarking amounts, and a GST percentage for each of 39 stations -- YQ fuel surcharge is per-route in Table A, not per-station, so no YQ line items appear in Table B."
+}

@@ -1,0 +1,10 @@
+{
+  "airline": "Air India",
+  "document_title": "Air India Domestic Fares (Instant & Advance Purchase Fares)",
+  "effective_period": "Fares for the period W.I.E. (with immediate effect) till 30th April 2027; document is the tariff sheet updated/effective as on 01 April 2026 (per document footer note and filename)",
+  "source_url": null,
+  "obtained_by": "APIx team",
+  "obtained_date": "2026-09-14",
+  "obtained_method": "manual download, automated-fetch compliance unverified",
+  "notes": "8-page internal Excel-to-PDF tariff sheet whose page 2 (labelled 'Page I: Domestic - Taxes, Fees & Charges') publishes a station-specific tax/fee schedule (UDF, ASF/RCF/CUTE flat fees, one PSF row, and general GST/YQ remarks), while pages 3-7 are fare-level base-fare grids (Level 1-13 by Minimum/Maximum) that were excluded from extraction, and page 8 covers change/cancellation/baggage rules."
+}

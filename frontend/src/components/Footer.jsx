@@ -17,8 +17,8 @@ export default function Footer({ onOpenWhitepaper }) {
               <span className="text-lg font-extrabold text-white tracking-tight font-sans">APEX-IND</span>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              India’s premier real-time airfare price index benchmark, powered by Multilateral GEKS aggregation 
-              and calibrated with MoSPI CPI expenditure weights.
+              India’s premier real-time airfare price index benchmark, powered by Multilateral GEKS-Jevons
+              aggregation and route-weighted by real DGCA passenger traffic share.
             </p>
             <div className="flex items-center space-x-3 text-slate-500 pt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
