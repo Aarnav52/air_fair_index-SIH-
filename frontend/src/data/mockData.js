@@ -1,10 +1,13 @@
 // APEX-IND Simulated Real-Time Data Engine for Airfare Price Index & Analytics
 
+// Real, verifiable operational counts (live DB, apix(SIH)) — not derived
+// index statistics, since GEKS-Jevons aggregation isn't wired to the live
+// API yet. Update these if the live counts change materially.
 export const HERO_STATS = [
-  { label: 'APEX-IND Index Value', value: '168.45', change: '+1.42%', period: '7d avg', status: 'up' },
-  { label: 'Price Volatility Index', value: '0.0394', change: '-0.18%', period: '7d avg', status: 'down' },
-  { label: 'Advance Window Coverage', value: '45 Days', subtext: 'T-0 to T-45 Buckets', status: 'neutral' },
-  { label: 'Direct Route Ratio', value: '89.4%', subtext: '120 Metro & Non-Metro Corridors', status: 'neutral' }
+  { label: 'Real Fare Observations', value: '2,574', subtext: '100% real_scraped, zero synthetic', status: 'neutral' },
+  { label: 'Active Routes', value: '7', subtext: 'DEL-BOM, DEL-BLR, BOM-BLR + 4 more', status: 'neutral' },
+  { label: 'Airlines Tracked', value: '12', subtext: 'via SerpApi + direct Akasa/SpiceJet', status: 'neutral' },
+  { label: 'Booking Windows', value: 'T+1 · T+30', subtext: 'every 6h / daily, automated', status: 'neutral' }
 ];
 
 export const LIVE_TICKER_FEED = [
