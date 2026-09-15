@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import {
   RefreshCw, Plane, Activity, Database, AlertCircle, CheckCircle2, Loader2,
-  TrendingUp, TrendingDown, ArrowUpRight,
+  TrendingDown, ArrowUpRight,
 } from 'lucide-react';
 import {
   fetchRoutes, fetchFlights, triggerScrape, fetchIndex, fetchHealth,
@@ -246,12 +246,17 @@ export default function LiveDataPanel() {
         />
       </div>
 
-      {/* Index Chart (visible once multi-day data exists) */}
-      {chartData.length > 1 && (
+      {/* Index Chart (visible once any scraped index data exists) */}
+      {chartData.length >= 1 && (
         <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
           <h4 className="text-sm font-bold text-white flex items-center gap-2">
             <Activity className="w-4 h-4 text-sky-400" />
             Jevons Price Index — Historical Series ({selectedRoute} · {selectedWindow})
+            {chartData.length === 1 && (
+              <span className="text-[10px] font-normal text-sky-400/70 ml-2 font-mono">
+                (1 scrape day — more days = trend line)
+              </span>
+            )}
           </h4>
           <div className="w-full h-52">
             <ResponsiveContainer width="100%" height="100%">
@@ -264,27 +269,32 @@ export default function LiveDataPanel() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="date" stroke="#64748b" fontSize={10} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={10} domain={['dataMin - 2', 'dataMax + 2']} tickLine={false} />
+                <YAxis stroke="#64748b" fontSize={10} domain={['dataMin - 5', 'dataMax + 5']} tickLine={false} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#090d16', borderColor: '#38bdf833', borderRadius: '10px', color: '#fff', fontSize: '11px' }}
                   formatter={(v, n) => n === 'indexValue' ? [`${v}`, 'Jevons Index'] : [`₹${v}`, 'Avg Price']}
                 />
-                <Area type="monotone" dataKey="indexValue" name="indexValue" stroke="#38bdf8" strokeWidth={2.5} fillOpacity={1} fill="url(#liveIndexGlow)" dot={{ r: 3, fill: '#38bdf8' }} />
+                <Area
+                  type="monotone"
+                  dataKey="indexValue"
+                  name="indexValue"
+                  stroke="#38bdf8"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#liveIndexGlow)"
+                  dot={{ r: 5, fill: '#38bdf8', strokeWidth: 2, stroke: '#0ea5e9' }}
+                  activeDot={{ r: 7 }}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
           <p className="text-[11px] text-slate-500">
-            Index base = 100 on <span className="font-mono text-slate-400">{indexData?.base_date}</span>. 
+            Index base = 100 on <span className="font-mono text-slate-400">{indexData?.base_date}</span>.
             Values above 100 indicate fares rising vs the base day.
+            {chartData.length === 1 && (
+              <span className="text-sky-400/70 ml-1">Scrape again tomorrow to see daily movement.</span>
+            )}
           </p>
-        </div>
-      )}
-
-      {/* Single data point note */}
-      {chartData.length === 1 && (
-        <div className="p-4 rounded-xl bg-sky-950/40 border border-sky-500/20 text-xs text-sky-300 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 shrink-0" />
-          Index chart will appear once data from multiple scrape days is available. Run <strong>Scrape Now</strong> again tomorrow to start tracking movement.
         </div>
       )}
 

@@ -46,7 +46,7 @@ export default function Dashboard() {
         setIndexError(null);
 
         const response = await fetch(
-          'http://localhost:8000/index/?route=AMD-DEL&window=T%2B1'
+          'http://localhost:8000/index/?route=DEL-BOM&window=T%2B1'
         );
 
         if (!response.ok) {
@@ -82,24 +82,47 @@ export default function Dashboard() {
   // REAL BACKEND DATA → DASHBOARD FORMAT
   // ---------------------------------------------------------
   const chartData = useMemo(() => {
-    if (realIndexData.length === 0) {
-      return [];
+    // Real backend data available → use it, apply shockFactor for scenario simulation
+    if (realIndexData.length > 0) {
+      return realIndexData.map((item) => ({
+        date: item.date,
+        fullDate: item.date,
+        geksIndex: parseFloat((item.index_value * activeShockFactor).toFixed(2)),
+        avgFare: item.avg_price ? Math.round(item.avg_price * activeShockFactor) : null,
+        mospiCPI: null,   // backend doesn't expose this yet; MoSPI line hidden when null
+        volatility: null,
+      }));
     }
 
-    return realIndexData.map((item) => ({
-      date: item.date,
-      fullDate: item.date,
+    // Fallback: generate mock data respecting the selected time range and scenario shock
+    return generateTimeSeriesData(timeRange, activeShockFactor);
+  }, [realIndexData, activeShockFactor, timeRange]);
 
-      // REAL backend values
-      geksIndex: item.index_value,
-      avgFare: item.avg_price,
+  // ---------------------------------------------------------
+  // SUMMARY STATS — computed dynamically from chartData
+  // ---------------------------------------------------------
+  const summaryStats = useMemo(() => {
+    const values = chartData.map(d => d.geksIndex).filter(v => v != null && !isNaN(v));
+    if (values.length === 0) {
+      return { peakLabel: '—', peakValue: '—', troughLabel: '—', troughValue: '—', volatility: '—' };
+    }
 
-      // These remain unavailable until their backend
-      // implementations are connected.
-      mospiCPI: null,
-      volatility: null,
-    }));
-  }, [realIndexData]);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const peakDate   = chartData[values.indexOf(max)]?.date || '';
+    const troughDate = chartData[values.indexOf(min)]?.date || '';
+
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const stdDev = Math.sqrt(values.reduce((a, b) => a + (b - mean) ** 2, 0) / values.length);
+
+    return {
+      peakLabel:   peakDate,
+      peakValue:   max.toFixed(1),
+      troughLabel: troughDate,
+      troughValue: min.toFixed(1),
+      volatility:  `${(stdDev / mean * 100).toFixed(2)}σ`,
+    };
+  }, [chartData]);
 
   // ---------------------------------------------------------
   // FILTERED LIVE MONITORED CORRIDORS TABLE
@@ -655,11 +678,11 @@ export default function Dashboard() {
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-center">
 
                   <span className="text-slate-400 block text-[10px] uppercase">
-                    Festive Peak Surge
+                    Peak Index (Period)
                   </span>
 
                   <span className="text-rose-400 font-mono text-sm mt-0.5 block">
-                    Nov (Diwali): 178.8
+                    {summaryStats.peakLabel}: {summaryStats.peakValue}
                   </span>
 
                 </div>
@@ -668,11 +691,11 @@ export default function Dashboard() {
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-center">
 
                   <span className="text-slate-400 block text-[10px] uppercase">
-                    Monsoon Trough
+                    Trough (Period)
                   </span>
 
                   <span className="text-sky-400 font-mono text-sm mt-0.5 block">
-                    Jul (Off-Peak): 148.4
+                    {summaryStats.troughLabel}: {summaryStats.troughValue}
                   </span>
 
                 </div>
@@ -681,11 +704,11 @@ export default function Dashboard() {
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-center">
 
                   <span className="text-slate-400 block text-[10px] uppercase">
-                    Current Volatility Index
+                    Volatility Index (σ/μ)
                   </span>
 
                   <span className="text-emerald-400 font-mono text-sm mt-0.5 block">
-                    1.24σ (Normalized)
+                    {summaryStats.volatility}
                   </span>
 
                 </div>
