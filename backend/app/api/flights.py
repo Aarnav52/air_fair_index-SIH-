@@ -21,7 +21,7 @@ def get_flights(
     """
     query = """
         SELECT f.observation_id, f.airline_name, f.flight_number, f.departure_date, 
-               f.departure_time, f.raw_price_displayed, f.advance_booking_window,
+               f.departure_time, f.scrape_timestamp,f.raw_price_displayed, f.advance_booking_window,
                r.origin_airport, r.destination_airport
         FROM flight_observations f
         JOIN routes r ON f.route_id = r.route_id
@@ -54,10 +54,11 @@ def get_flights(
                         "flight_number": row[2],
                         "departure_date": row[3],
                         "departure_time": str(row[4]) if row[4] else None,
-                        "price": float(row[5]) if row[5] else None,
-                        "window": row[6],
-                        "origin": row[7],
-                        "destination": row[8]
+                        "scrape_timestamp": row[5].isoformat() if row[5] else None,
+                        "price": float(row[6]) if row[6] else None,
+                        "window": row[7],
+                        "origin": row[8],
+                        "destination": row[9]
                     })
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

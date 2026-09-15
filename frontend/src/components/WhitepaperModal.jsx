@@ -17,7 +17,7 @@ export default function WhitepaperModal({ isOpen, onClose }) {
             </div>
             <div>
               <h3 className="text-lg font-extrabold text-white">APEX-IND Technical Methodology Paper</h3>
-              <p className="text-xs text-slate-400">Version 2.4 • MoSPI Calibration & GEKS Transitivity</p>
+              <p className="text-xs text-slate-400">Elementary Jevons — live • MoSPI Calibration & GEKS Transitivity — roadmap</p>
             </div>
           </div>
 
@@ -36,10 +36,12 @@ export default function WhitepaperModal({ isOpen, onClose }) {
           <div className="p-5 rounded-2xl bg-sky-950/40 border border-sky-500/30 space-y-2">
             <h4 className="text-xs font-bold text-sky-400 uppercase tracking-wider">Abstract & Scope</h4>
             <p className="text-xs text-slate-300">
-              APEX-IND addresses the persistent issue of chain drift in high-frequency airfare indexing
-              across Indian domestic aviation routes. Using Jevons price relatives at the elementary level,
-              aggregated multilaterally via GEKS-Jevons (Gini-Eltetö-Köves-Szulc) across a rolling window
-              sized to the available data history, APEX-IND provides a transitive, drift-free daily price index route-weighted by real DGCA passenger traffic share.
+              APEX-IND targets the persistent issue of chain drift in high-frequency airfare indexing
+              across Indian domestic aviation routes. The elementary layer — Jevons price relatives,
+              geometric-mean aggregated — is built and running on real, live-scraped data today.
+              Multilateral GEKS-Jevons aggregation (Gini-Eltetö-Köves-Szulc) across a rolling window,
+              and route-weighting by real DGCA passenger traffic share, are the next implementation
+              phase, described below as the target methodology.
             </p>
           </div>
 
@@ -50,9 +52,12 @@ export default function WhitepaperModal({ isOpen, onClose }) {
               1. Ingestion Pipeline & Ancillary Noise Filtering
             </h4>
             <p className="text-slate-300">
-              Airfare pricing engines generate significant pricing noise due to unbundled ancillaries 
-              (seat assignment, meals, priority check-in) and convenience fee surges. APEX-IND deploys 
-              automated scrapers across 120 domestic routes, parsing over 4.2 million fare points daily.
+              Airfare pricing engines generate significant pricing noise due to unbundled ancillaries
+              (seat assignment, meals, priority check-in) and convenience fee surges. APEX-IND deploys
+              automated, compliance-gated scrapers (SerpApi plus direct Akasa Air and SpiceJet collection,
+              every 6 hours for T+1 fares and daily for T+30) across 7 domestic routes today, with 2,500+
+              real fare points collected so far — the remaining T+7/T+15/T+45 booking windows and
+              additional routes are next on the roadmap.
             </p>
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
               <p className="text-sky-400">// Noise Filtering Rule</p>
@@ -65,12 +70,14 @@ export default function WhitepaperModal({ isOpen, onClose }) {
           <div className="space-y-3">
             <h4 className="text-base font-bold text-white flex items-center gap-2">
               <Calculator className="w-4 h-4 text-sky-400" />
-              2. Multilateral GEKS Index Formulation
+              2. Multilateral GEKS Index Formulation — target methodology, next build phase
             </h4>
             <p className="text-slate-300">
-              Chained bilateral indices suffer from non-transitivity ($P_{a,b} \times P_{b,c} \neq P_{a,c}$) 
-              when fares bounce back after promotional periods. The Multilateral GEKS index resolves 
-              this by calculating the geometric mean of all bilateral Jevons links:
+              Chained bilateral indices suffer from non-transitivity ($P_{a,b} \times P_{b,c} \neq P_{a,c}$)
+              when fares bounce back after promotional periods. The Multilateral GEKS index resolves
+              this by calculating the geometric mean of all bilateral Jevons links. The elementary Jevons
+              layer below it is already implemented and verified against real data; this multilateral
+              rollup is the designed target, not yet computed on the live index:
             </p>
 
             <div className="p-4 rounded-xl bg-slate-950 border border-sky-500/30 text-center font-mono text-sky-300 text-sm">
@@ -82,14 +89,16 @@ export default function WhitepaperModal({ isOpen, onClose }) {
           <div className="space-y-3">
             <h4 className="text-base font-bold text-white flex items-center gap-2">
               <Layers className="w-4 h-4 text-sky-400" />
-              3. DGCA Passenger Traffic-Share Weighting
+              3. DGCA Passenger Traffic-Share Weighting — data collected, weighting not yet applied
             </h4>
             <p className="text-slate-300">
-              Route weights are calibrated using real DGCA (Directorate General of Civil Aviation)
-              passenger traffic volume data per route, ensuring high-traffic corridors like
-              Delhi-Mumbai or Mumbai-Bengaluru carry proportionally accurate importance in the
-              composite index — deliberately without relying on expenditure-weight data, since
-              scraped price quotes carry none.
+              Real DGCA (Directorate General of Civil Aviation) monthly passenger traffic volume is
+              already collected for 6 of today's 7 active routes (e.g. 291,500/month for Delhi-Mumbai
+              down to 88,500/month for Bengaluru-Hyderabad). Route weights are designed to be calibrated
+              from this data — so high-traffic corridors carry proportionally accurate importance in the
+              composite index, deliberately without relying on expenditure-weight data, since scraped
+              price quotes carry none — but this weighting is not yet wired into the live index
+              computation; every route currently counts equally.
             </p>
           </div>
 

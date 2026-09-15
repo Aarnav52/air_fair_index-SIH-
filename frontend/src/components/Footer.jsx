@@ -17,12 +17,13 @@ export default function Footer({ onOpenWhitepaper }) {
               <span className="text-lg font-extrabold text-white tracking-tight font-sans">APEX-IND</span>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              India’s premier real-time airfare price index benchmark, powered by Multilateral GEKS-Jevons
-              aggregation and route-weighted by real DGCA passenger traffic share.
+              India's real-time airfare price index benchmark, built on Jevons price-relative
+              aggregation — with multilateral GEKS-Jevons and real DGCA passenger traffic-share
+              weighting as the next build phase.
             </p>
             <div className="flex items-center space-x-3 text-slate-500 pt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-[11px]">DGCA & MoSPI Methodology Compliant</span>
+              <span className="text-[11px]">DGCA & MoSPI-Aligned Methodology</span>
             </div>
           </div>
 
@@ -30,9 +31,9 @@ export default function Footer({ onOpenWhitepaper }) {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase text-white tracking-wider">Methodology</h4>
             <ul className="space-y-2">
-              <li><a href="#pipeline" className="hover:text-sky-400 transition-colors">4.2M Ingestion Pipeline</a></li>
+              <li><a href="#pipeline" className="hover:text-sky-400 transition-colors">2,500+ Real-Fare Ingestion Pipeline</a></li>
               <li><a href="#deduplication" className="hover:text-sky-400 transition-colors">Ancillary Noise Filter</a></li>
-              <li><a href="#booking-windows" className="hover:text-sky-400 transition-colors">T-0 to T-45 Lead Windows</a></li>
+              <li><a href="#booking-windows" className="hover:text-sky-400 transition-colors">T+1 & T+30 Booking Windows</a></li>
               <li><a href="#geks-methodology" className="hover:text-sky-400 transition-colors">Multilateral GEKS Math</a></li>
               <li><a href="#mospi-calibration" className="hover:text-sky-400 transition-colors">MoSPI CPI Transport Alignment</a></li>
             </ul>
@@ -53,9 +54,10 @@ export default function Footer({ onOpenWhitepaper }) {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase text-white tracking-wider">Index Standards</h4>
             <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-              <span className="text-[11px] font-mono text-sky-400 block font-bold">GEKS Rolling 13M</span>
+              <span className="text-[11px] font-mono text-sky-400 block font-bold">Elementary Jevons Index — live</span>
               <p className="text-[11px] text-slate-400">
-                Eliminates non-transitivity and upward chain drift in dynamic airline yield management systems.
+                Multilateral GEKS transitivity (eliminating chain drift) is the next phase, alongside
+                scraping the remaining T+7/T+15/T+45 windows and expanding beyond today's 7 routes.
               </p>
             </div>
           </div>

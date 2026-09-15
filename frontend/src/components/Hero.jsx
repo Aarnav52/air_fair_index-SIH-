@@ -31,10 +31,10 @@ export default function Hero({ onExploreClick, onWhitepaperClick }) {
 
         {/* Hero Subtitle */}
         <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
-          Daily-updated benchmark tracking <strong className="text-slate-900 font-semibold">4.2M+ fares</strong> across 
-          120 domestic routes, 15 airlines, 6 booking windows (T-0 to T-45), 
-          aggregated by <strong className="text-slate-900 font-semibold">Multilateral GEKS Index</strong>, 
-          base-weighted to MoSPI weights.
+          Live benchmark tracking <strong className="text-slate-900 font-semibold">2,500+ real fares</strong> across
+          7 domestic routes, 12 airlines, T+1 and T+30 booking windows,
+          aggregated via <strong className="text-slate-900 font-semibold">Jevons price relatives</strong> —
+          multilateral GEKS aggregation and DGCA traffic-weighting are the next build phase.
         </p>
 
         {/* 4 Top KPI Metric Cards */}
