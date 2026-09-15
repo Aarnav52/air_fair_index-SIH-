@@ -20,6 +20,10 @@ __pycache__/
 # Raw source documents (copyrighted airline tariff PDFs - never public, see CLAUDE.md)
 data/source_documents/tariff_sheets_raw/
 
+# Local reference docs (kept out of git so commit history stays self-contained for teammates)
+/CLAUDE.md
+/PLAN.md
+
 # Editor & OS files
 .DS_Store
 *.suo
