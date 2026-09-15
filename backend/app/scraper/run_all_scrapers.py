@@ -100,13 +100,21 @@ def run_spicejet(conn, route, window, target_date):
     return _store_flights(conn, flights, "SpiceJet Direct", route, window, target_date)
 
 
-def run_full_sweep(route_limit=None):
+def run_full_sweep(route_limit=None, windows=None):
+    """
+    windows: subset of WINDOWS keys to sweep (e.g. ["T+1"]). None/omitted
+    means all of them - kept so a scheduler can run T+1 and T+30 on
+    independent cadences (T+1 changes fast, T+30 barely moves day to day)
+    without hitting SerpApi/the direct scrapers for windows nobody asked for.
+    """
+    active_windows = {w: WINDOWS[w] for w in windows} if windows else WINDOWS
+
     today = datetime.datetime.now(IST).date()
     summary = {"serpapi": 0, "akasa": 0, "spicejet": 0, "errors": []}
 
     with get_db_connection() as conn:
         routes = get_active_routes(conn)
-        if route_limit:
+        if route_limit is not None:
             routes = routes[:route_limit]
 
         for route in routes:
@@ -114,7 +122,7 @@ def run_full_sweep(route_limit=None):
             logger.info(f"=== Route {origin}-{dest} (route_id={route['route_id']}) ===")
 
             try:
-                result = scraping_service.run_scrape(origin, dest, list(WINDOWS.keys()))
+                result = scraping_service.run_scrape(origin, dest, list(active_windows.keys()))
                 inserted = sum(w.get("rows_inserted", 0) for w in result["details"])
                 summary["serpapi"] += inserted
                 logger.info(f"SerpApi: {inserted} rows inserted")
@@ -122,7 +130,7 @@ def run_full_sweep(route_limit=None):
                 logger.error(f"SerpApi failed for {origin}-{dest}: {e}")
                 summary["errors"].append(f"serpapi/{origin}-{dest}: {e}")
 
-            for window, days_ahead in WINDOWS.items():
+            for window, days_ahead in active_windows.items():
                 target_date = (today + datetime.timedelta(days=days_ahead)).isoformat()
 
                 try:
@@ -145,11 +153,23 @@ def run_full_sweep(route_limit=None):
 
 
 if __name__ == "__main__":
-    import sys
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Sweep active routes for real fares.")
+    parser.add_argument(
+        "--window", action="append", choices=list(WINDOWS.keys()), dest="windows",
+        help="Booking window to sweep (repeatable). Omit to sweep all windows.",
+    )
+    parser.add_argument(
+        "--limit", type=int, default=None,
+        help="Only sweep the first N active routes (for testing).",
+    )
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO)
-    limit = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    result = run_full_sweep(route_limit=limit)
+    result = run_full_sweep(route_limit=args.limit, windows=args.windows)
     print("\n=== SWEEP SUMMARY ===")
+    print(f"Windows:                 {args.windows or list(WINDOWS.keys())}")
     print(f"SerpApi rows inserted:   {result['serpapi']}")
     print(f"Akasa rows inserted:     {result['akasa']}")
     print(f"SpiceJet rows inserted:  {result['spicejet']}")

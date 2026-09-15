@@ -17,6 +17,9 @@ dist-ssr
 __pycache__/
 *.pyc
 
+# Scheduled scraper sweep logs (local only, see backend/app/scraper/run_all_scrapers.py)
+backend/logs/
+
 # Raw source documents (copyrighted airline tariff PDFs - never public, see CLAUDE.md)
 data/source_documents/tariff_sheets_raw/
 
